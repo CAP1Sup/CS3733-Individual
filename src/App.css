@@ -1,42 +1,37 @@
-#root {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
+.App {
   text-align: center;
+  font-family: "Segoe UI", sans-serif;
+  --d-pad-size: 100px;
+  --d-pad-center-x: 200px;
+  --d-pad-center-y: 700px;
 }
 
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
+.App-canvas {
+  position: absolute;
+  top: 100px;
+  left: 200px;
 }
 
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.upButton {
+  position: absolute;
+  top: calc(var(--d-pad-center-x) - var(--d-pad-size)/2);
+  left: var(--d-pad-center-y);
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
-  }
+.downButton {
+  position: absolute;
+  top: calc(var(--d-pad-center-x) + var(--d-pad-size)/2);
+  left: var(--d-pad-center-y);
 }
 
-.card {
-  padding: 2em;
+.leftButton {
+  position: absolute;
+  top: var(--d-pad-center-x);
+  left: calc(var(--d-pad-center-y) - var(--d-pad-size)/2);
 }
 
-.read-the-docs {
-  color: #888;
+.rightButton {
+  position: absolute;
+  top: var(--d-pad-center-x);
+  left: calc(var(--d-pad-center-y) + var(--d-pad-size)/2);
 }
