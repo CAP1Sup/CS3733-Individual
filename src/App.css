@@ -1,37 +1,81 @@
 .App {
   text-align: center;
   font-family: "Segoe UI", sans-serif;
+  --canvas-size: 400px;
+  --canvas-center-y: 300px;
+
   --d-pad-size: 100px;
-  --d-pad-center-x: 200px;
-  --d-pad-center-y: 700px;
+  --d-pad-center-y: 200px;
+  --d-pad-center-x: 800px;
+  --d-pad-button-size: 30px;
+}
+
+.fourByFourImg {
+  top: 100px;
+  left: 50px;
 }
 
 .App-canvas {
   position: absolute;
-  top: 100px;
-  left: 200px;
+  top: calc(var(--canvas-center-y) - var(--canvas-size)/2);
+  left: calc(50% - var(--canvas-size)/2);
+}
+
+.moveCounter, .scoreCounter {
+  position: absolute;
+  width: 100px;
+  left: calc(50% - 50px);
+  font-size: 20px;
+}
+
+.moveCounter {
+  top: 500px;
+}
+
+.scoreCounter {
+  top: 525px;
+}
+
+.upButton, .downButton, .leftButton, .rightButton, .removeGroupsButton{
+  background-color: #ccc;
+  border: 1px solid #aaa;
+  box-shadow: 0 0 5px #aaa;
+  cursor: pointer;
+}
+
+.upButton, .downButton, .leftButton, .rightButton {
+  position: absolute;
+  width: var(--d-pad-button-size);
+  height: var(--d-pad-button-size);
+  border-radius: 25%;
 }
 
 .upButton {
-  position: absolute;
-  top: calc(var(--d-pad-center-x) - var(--d-pad-size)/2);
-  left: var(--d-pad-center-y);
+  top: calc(var(--d-pad-center-y) - var(--d-pad-size)/2);
+  left: var(--d-pad-center-x);
 }
 
 .downButton {
-  position: absolute;
-  top: calc(var(--d-pad-center-x) + var(--d-pad-size)/2);
-  left: var(--d-pad-center-y);
+  top: calc(var(--d-pad-center-y) + var(--d-pad-size)/2);
+  left: var(--d-pad-center-x);
 }
 
 .leftButton {
-  position: absolute;
-  top: var(--d-pad-center-x);
-  left: calc(var(--d-pad-center-y) - var(--d-pad-size)/2);
+  top: var(--d-pad-center-y);
+  left: calc(var(--d-pad-center-x) - var(--d-pad-size)/2);
 }
 
 .rightButton {
-  position: absolute;
-  top: var(--d-pad-center-x);
-  left: calc(var(--d-pad-center-y) + var(--d-pad-size)/2);
+  top: var(--d-pad-center-y);
+  left: calc(var(--d-pad-center-x) + var(--d-pad-size)/2);
 }
+
+.removeGroupsButton {
+  position: absolute;
+  top: 300px;
+  left: calc(var(--d-pad-center-x) - var(--d-pad-size)/2);
+  width: calc(var(--d-pad-size) + var(--d-pad-button-size));
+  height: 50px;
+  border-radius: 10px;
+}
+

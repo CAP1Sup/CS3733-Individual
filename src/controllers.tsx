@@ -1,6 +1,5 @@
 import { Game, Board } from "./model/entities";
 import { BoardConfig } from "./model/configs";
-import { redrawCanvas } from "./boundary/boundary";
 
 export function chooseConfig(game: Game, config: BoardConfig) {
   // Create a new board with the given dimensions
