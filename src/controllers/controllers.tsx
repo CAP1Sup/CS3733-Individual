@@ -85,15 +85,11 @@ function movingOffBoard(game: Game, direction: Direction) {
 function pushSquares(game: Game, direction: Direction) {
   // Decide where to move Ninja-Se
   if (direction === Direction.Up) {
-    if (game.ninjaRow <= 0) {
-      return; // Exit if already at the top
-    }
-
     // Loop until the next square is white
     for (let c = 0; c < game.ninjaSize; c++) {
       let lastColoredRow = game.ninjaRow - 1;
       while (
-        game.board.grid[remapIndex(lastColoredRow, game.board.size)][
+        game.board.grid[wrapIndex(lastColoredRow, game.board.size)][
           game.ninjaColumn + c
         ] !== "white"
       ) {
@@ -102,8 +98,8 @@ function pushSquares(game: Game, direction: Direction) {
 
       // Shift the squares
       for (let i = lastColoredRow; i < game.ninjaRow; i++) {
-        game.board.grid[remapIndex(i, game.board.size)][game.ninjaColumn + c] =
-          game.board.grid[remapIndex(i + 1, game.board.size)][
+        game.board.grid[wrapIndex(i, game.board.size)][game.ninjaColumn + c] =
+          game.board.grid[wrapIndex(i + 1, game.board.size)][
             game.ninjaColumn + c
           ];
       }
@@ -112,15 +108,11 @@ function pushSquares(game: Game, direction: Direction) {
       game.score += game.ninjaRow - lastColoredRow - 1;
     }
   } else if (direction === Direction.Down) {
-    if (game.ninjaRow >= game.board.size - game.ninjaSize) {
-      return; // Exit if already at the bottom
-    }
-
     // Loop until the next square is white
     for (let c = 0; c < game.ninjaSize; c++) {
       let lastColoredRow = game.ninjaRow + game.ninjaSize;
       while (
-        game.board.grid[remapIndex(lastColoredRow, game.board.size)][
+        game.board.grid[wrapIndex(lastColoredRow, game.board.size)][
           game.ninjaColumn + c
         ] !== "white"
       ) {
@@ -128,33 +120,27 @@ function pushSquares(game: Game, direction: Direction) {
       }
 
       // Shift the squares
-      for (let i = lastColoredRow; i > game.ninjaRow; i--) {
-        game.board.grid[remapIndex(i, game.board.size)][game.ninjaColumn + c] =
-          game.board.grid[remapIndex(i - 1, game.board.size)][
+      for (
+        let i = lastColoredRow;
+        i > game.ninjaRow + game.ninjaSize - 1;
+        i--
+      ) {
+        game.board.grid[wrapIndex(i, game.board.size)][game.ninjaColumn + c] =
+          game.board.grid[wrapIndex(i - 1, game.board.size)][
             game.ninjaColumn + c
           ];
       }
-
-      // Make the previously last colored row white
-      // TODO: Somewhat inefficient... maybe rewrite later?
-      game.board.grid[remapIndex(lastColoredRow + 1, game.board.size)][
-        game.ninjaColumn + c
-      ] = "white";
 
       // Increase the score
       game.score += lastColoredRow - game.ninjaRow - 2;
     }
   } else if (direction === Direction.Left) {
-    if (game.ninjaColumn <= 0) {
-      return; // Exit if already at the left edge
-    }
-
     // Loop until the next square is white
     for (let r = 0; r < game.ninjaSize; r++) {
       let lastColoredColumn = game.ninjaColumn - 1;
       while (
         game.board.grid[game.ninjaRow + r][
-          remapIndex(lastColoredColumn, game.board.size)
+          wrapIndex(lastColoredColumn, game.board.size)
         ] !== "white"
       ) {
         lastColoredColumn--;
@@ -162,44 +148,34 @@ function pushSquares(game: Game, direction: Direction) {
 
       // Shift the squares
       for (let i = lastColoredColumn; i < game.ninjaColumn; i++) {
-        game.board.grid[game.ninjaRow + r][remapIndex(i, game.board.size)] =
-          game.board.grid[game.ninjaRow + r][
-            remapIndex(i + 1, game.board.size)
-          ];
+        game.board.grid[game.ninjaRow + r][wrapIndex(i, game.board.size)] =
+          game.board.grid[game.ninjaRow + r][wrapIndex(i + 1, game.board.size)];
       }
 
       // Increase the score
       game.score += game.ninjaColumn - lastColoredColumn - 1;
     }
   } else if (direction === Direction.Right) {
-    if (game.ninjaColumn >= game.board.size - game.ninjaSize) {
-      return; // Exit if already at the right edge
-    }
-
     // Loop until the next square is white
     for (let r = 0; r < game.ninjaSize; r++) {
       let lastColoredColumn = game.ninjaColumn + game.ninjaSize;
       while (
         game.board.grid[game.ninjaRow + r][
-          remapIndex(lastColoredColumn, game.board.size)
+          wrapIndex(lastColoredColumn, game.board.size)
         ] !== "white"
       ) {
         lastColoredColumn++;
       }
 
       // Shift the squares
-      for (let i = lastColoredColumn; i > game.ninjaColumn; i--) {
-        game.board.grid[game.ninjaRow + r][remapIndex(i, game.board.size)] =
-          game.board.grid[game.ninjaRow + r][
-            remapIndex(i - 1, game.board.size)
-          ];
+      for (
+        let i = lastColoredColumn;
+        i > game.ninjaColumn + game.ninjaSize - 1;
+        i--
+      ) {
+        game.board.grid[game.ninjaRow + r][wrapIndex(i, game.board.size)] =
+          game.board.grid[game.ninjaRow + r][wrapIndex(i - 1, game.board.size)];
       }
-
-      // Make the previously last colored column white
-      // TODO: Somewhat inefficient... maybe rewrite later?
-      game.board.grid[game.ninjaRow + r][
-        remapIndex(lastColoredColumn + 1, game.board.size)
-      ] = "white";
 
       // Increase the score
       game.score += lastColoredColumn - game.ninjaColumn - 2;
@@ -207,7 +183,7 @@ function pushSquares(game: Game, direction: Direction) {
   }
 }
 
-function remapIndex(index: number, size: number) {
+function wrapIndex(index: number, size: number) {
   while (index < 0) {
     index += size;
   }
