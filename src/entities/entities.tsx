@@ -1,5 +1,4 @@
-import { chooseConfig } from "../controllers";
-import { config_5x5 } from "./configs";
+import { BoardConfig, config_5x5 } from "./configs";
 
 export class Game {
   board: Board;
@@ -8,6 +7,7 @@ export class Game {
   ninjaRow: number;
   ninjaColumn: number;
   ninjaSize: number = 2;
+  currentConfig: BoardConfig = config_5x5;
 
   constructor() {
     this.board = new Board(5);
@@ -15,10 +15,6 @@ export class Game {
     this.ninjaColumn = 0;
     this.moves = 0;
     this.score = 0;
-
-    // Configure the board to a 5x5 by default
-    // Must come last
-    chooseConfig(this, config_5x5);
   }
 }
 
@@ -30,6 +26,14 @@ export class Board {
   constructor(size: number) {
     this.size = size;
     this.grid = [];
+
+    // Fill the board with white squares
+    for (let i = 0; i < this.size; i++) {
+      this.grid[i] = [];
+      for (let j = 0; j < this.size; j++) {
+        this.grid[i][j] = "white";
+      }
+    }
   }
 }
 

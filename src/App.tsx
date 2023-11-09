@@ -1,12 +1,22 @@
-import React from "react";
+import React, { KeyboardEvent } from "react";
 import "./App.css";
 
 import { redrawCanvas } from "./boundary/boundary.tsx";
-import { Direction, Game } from "./model/entities.tsx";
+import { Direction, Game } from "./entities/entities.tsx";
 import ninjaSe from "./assets/ninjase.svg";
-import fourByFour from "./assets/4x4.jpg";
-import { chooseConfig } from "./controllers.tsx";
-import { config_4x4 } from "./model/configs.tsx";
+import {
+  chooseConfig,
+  moveNinjaSe,
+  removeGroups,
+  resetGame,
+  solveGame,
+} from "./controllers/controllers.tsx";
+import {
+  BoardConfig,
+  config_4x4,
+  config_5x5,
+  config_6x6,
+} from "./entities/configs.tsx";
 
 function App() {
   // initial instantiation of the Model
@@ -28,205 +38,47 @@ function App() {
   // TODO: Fix this
   const keyDownHandler = (event: KeyboardEvent) => {
     if (event.key === "ArrowUp") {
-      moveNinjaSe(Direction.Up);
+      moveNinjaSeHandler(Direction.Up);
     } else if (event.key === "ArrowDown") {
-      moveNinjaSe(Direction.Down);
+      moveNinjaSeHandler(Direction.Down);
     } else if (event.key === "ArrowLeft") {
-      moveNinjaSe(Direction.Left);
+      moveNinjaSeHandler(Direction.Left);
     } else if (event.key === "ArrowRight") {
-      moveNinjaSe(Direction.Right);
+      moveNinjaSeHandler(Direction.Right);
     }
-    console.log(event.key);
   };
 
-  // Controller for moving Ninja-Se
-  function moveNinjaSe(direction: Direction) {
-    // TODO: Fix occasional bug where Ninja-Se becomes claustrophobic and doesn't want to move when surrounded by squares
-
-    // Make sure board isn't locked
-    if (game.board.locked) {
-      return;
-    }
-
-    // Decide where to move Ninja-Se
-    if (direction === Direction.Up) {
-      if (game.ninjaRow <= 0) {
-        return; // Exit if already at the top
-      }
-
-      // Loop until the next square is white
-      for (let c = 0; c < game.ninjaSize; c++) {
-        let lastColoredRow = game.ninjaRow - 1;
-        while (
-          game.board.grid[remapIndex(lastColoredRow, game.board.size)][
-            game.ninjaColumn + c
-          ] !== "white"
-        ) {
-          lastColoredRow--;
-        }
-
-        // Shift the squares
-        for (let i = lastColoredRow; i < game.ninjaRow; i++) {
-          game.board.grid[remapIndex(i, game.board.size)][
-            game.ninjaColumn + c
-          ] =
-            game.board.grid[remapIndex(i + 1, game.board.size)][
-              game.ninjaColumn + c
-            ];
-        }
-
-        // Increase the score
-        game.score += game.ninjaRow - lastColoredRow - 1;
-      }
-
-      // Move the ninja
-      game.ninjaRow--;
-    } else if (direction === Direction.Down) {
-      if (game.ninjaRow >= game.board.size - game.ninjaSize) {
-        return; // Exit if already at the bottom
-      }
-
-      // Loop until the next square is white
-      for (let c = 0; c < game.ninjaSize; c++) {
-        let lastColoredRow = game.ninjaRow + game.ninjaSize;
-        while (
-          game.board.grid[remapIndex(lastColoredRow, game.board.size)][
-            game.ninjaColumn + c
-          ] !== "white"
-        ) {
-          lastColoredRow++;
-        }
-
-        // Shift the squares
-        for (let i = lastColoredRow; i > game.ninjaRow; i--) {
-          game.board.grid[remapIndex(i, game.board.size)][
-            game.ninjaColumn + c
-          ] =
-            game.board.grid[remapIndex(i - 1, game.board.size)][
-              game.ninjaColumn + c
-            ];
-        }
-
-        // Increase the score
-        game.score += lastColoredRow - game.ninjaRow - 2;
-      }
-
-      game.ninjaRow++;
-    } else if (direction === Direction.Left) {
-      if (game.ninjaColumn <= 0) {
-        return; // Exit if already at the left edge
-      }
-
-      // Loop until the next square is white
-      for (let r = 0; r < game.ninjaSize; r++) {
-        let lastColoredColumn = game.ninjaColumn - 1;
-        while (
-          game.board.grid[game.ninjaRow + r][
-            remapIndex(lastColoredColumn, game.board.size)
-          ] !== "white"
-        ) {
-          lastColoredColumn--;
-        }
-
-        // Shift the squares
-        for (let i = lastColoredColumn; i < game.ninjaColumn; i++) {
-          game.board.grid[game.ninjaRow + r][remapIndex(i, game.board.size)] =
-            game.board.grid[game.ninjaRow + r][
-              remapIndex(i + 1, game.board.size)
-            ];
-        }
-
-        // Increase the score
-        game.score += game.ninjaColumn - lastColoredColumn - 1;
-      }
-
-      game.ninjaColumn--;
-    } else if (direction === Direction.Right) {
-      if (game.ninjaColumn >= game.board.size - game.ninjaSize) {
-        return; // Exit if already at the right edge
-      }
-
-      // Loop until the next square is white
-      for (let r = 0; r < game.ninjaSize; r++) {
-        let lastColoredColumn = game.ninjaColumn + game.ninjaSize;
-        while (
-          game.board.grid[game.ninjaRow + r][
-            remapIndex(lastColoredColumn, game.board.size)
-          ] !== "white"
-        ) {
-          lastColoredColumn++;
-        }
-
-        // Shift the squares
-        for (let i = lastColoredColumn; i > game.ninjaColumn; i--) {
-          game.board.grid[game.ninjaRow + r][remapIndex(i, game.board.size)] =
-            game.board.grid[game.ninjaRow + r][
-              remapIndex(i - 1, game.board.size)
-            ];
-        }
-
-        // Increase the score
-        game.score += lastColoredColumn - game.ninjaColumn - 2;
-      }
-
-      game.ninjaColumn++;
-    }
-
-    // Increment the number of moves
-    game.moves++;
-
-    // Refresh the display
+  function chooseConfigHandler(config: BoardConfig) {
+    chooseConfig(game, config);
     forceRedraw(redraw + 1);
   }
 
-  function removeGroups() {
-    // Make sure board isn't locked
-    if (game.board.locked) {
-      return;
-    }
-
-    // Check for groups
-    for (let r = 0; r < game.board.size; r++) {
-      for (let c = 0; c < game.board.size; c++) {
-        if (
-          isASquare(r, c) &&
-          isASquare(r + 1, c) &&
-          isASquare(r, c + 1) &&
-          isASquare(r + 1, c + 1)
-        ) {
-          // Remove the group
-          game.board.grid[r][c] = "white";
-          game.board.grid[r + 1][c] = "white";
-          game.board.grid[r][c + 1] = "white";
-          game.board.grid[r + 1][c + 1] = "white";
-
-          // Increment the score
-          game.score += 4;
-        }
-      }
-    }
-
-    // TODO: Check if all squares are white (meaning the user won!)
-
-    // Refresh the display
+  function moveNinjaSeHandler(direction: Direction) {
+    moveNinjaSe(game, direction);
     forceRedraw(redraw + 1);
   }
 
-  function isASquare(r: number, c: number) {
-    // Check the row is valid
-    if (r < 0 || r >= game.board.size) {
-      return false;
+  function removeGroupsHandler() {
+    if (removeGroups(game)) {
+      // TODO: Display win message
     }
-
-    // Check the column is valid
-    if (c < 0 || c >= game.board.size) {
-      return false;
-    }
-
-    return (
-      game.board.grid[r][c] !== "white" && game.board.grid[r][c] !== "ninja"
-    );
+    forceRedraw(redraw + 1);
   }
+
+  function resetGameHandler() {
+    resetGame(game);
+    forceRedraw(redraw + 1);
+  }
+
+  function solveGameHandler() {
+    solveGame(game);
+    forceRedraw(redraw + 1);
+  }
+
+  onload = () => {
+    chooseConfigHandler(config_5x5);
+    //addEventListener("keydown", keyDownHandler);
+  };
 
   return (
     <div className="App" ref={appRef}>
@@ -234,9 +86,21 @@ function App() {
       <h1>SquarePush</h1>
       <button
         className="fourByFourButton"
-        onClick={() => chooseConfig(game, config_4x4)}
+        onClick={() => chooseConfigHandler(config_4x4)}
       >
         4x4
+      </button>
+      <button
+        className="fiveByFiveButton"
+        onClick={() => chooseConfigHandler(config_5x5)}
+      >
+        5x5
+      </button>
+      <button
+        className="sixBySixButton"
+        onClick={() => chooseConfigHandler(config_6x6)}
+      >
+        6x6
       </button>
       <img id="ninja-se" src={ninjaSe} alt="hidden" hidden></img>
       <canvas
@@ -252,39 +116,44 @@ function App() {
       <p className="scoreCounter">
         <b>Score: </b> {game.score}
       </p>
-      <button className="upButton" onClick={() => moveNinjaSe(Direction.Up)}>
+      <button
+        className="upButton"
+        onClick={() => moveNinjaSeHandler(Direction.Up)}
+      >
         ^
       </button>
       <button
         className="downButton"
-        onClick={() => moveNinjaSe(Direction.Down)}
+        onClick={() => moveNinjaSeHandler(Direction.Down)}
       >
         v
       </button>
       <button
         className="leftButton"
-        onClick={() => moveNinjaSe(Direction.Left)}
+        onClick={() => moveNinjaSeHandler(Direction.Left)}
       >
         &lt;
       </button>
       <button
         className="rightButton"
-        onClick={() => moveNinjaSe(Direction.Right)}
+        onClick={() => moveNinjaSeHandler(Direction.Right)}
       >
         &gt;
       </button>
-      <button className="removeGroupsButton" onClick={() => removeGroups()}>
+      <button
+        className="removeGroupsButton"
+        onClick={() => removeGroupsHandler()}
+      >
         Remove Groups
+      </button>
+      <button className="resetGameButton" onClick={() => resetGameHandler()}>
+        Reset Game
+      </button>
+      <button className="solveGameButton" onClick={() => solveGameHandler()}>
+        Solve Game
       </button>
     </div>
   );
-}
-
-function remapIndex(index: number, size: number) {
-  while (index < 0) {
-    index += size;
-  }
-  return index % size;
 }
 
 export default App;

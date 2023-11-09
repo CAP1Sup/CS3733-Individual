@@ -1,6 +1,6 @@
 /** Redraw entire canvas from model. */
 
-import { Game } from "../model/entities";
+import { Game } from "../entities/entities";
 
 export function redrawCanvas(game: Game, canvasObj: HTMLCanvasElement | null) {
   // Don't render if app doesn't exist
