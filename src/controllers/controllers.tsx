@@ -197,13 +197,16 @@ export function removeGroups(game: Game) {
   }
 
   // Check for groups
-  for (let r = 0; r < game.board.size; r++) {
-    for (let c = 0; c < game.board.size; c++) {
+  for (let r = 0; r < game.board.size - 1; r++) {
+    for (let c = 0; c < game.board.size - 1; c++) {
+      // If the top left square is not white
+      // and the other three squares are the same color,
+      // then we have a group
       if (
         game.board.isASquare(r, c) &&
-        game.board.isASquare(r + 1, c) &&
-        game.board.isASquare(r, c + 1) &&
-        game.board.isASquare(r + 1, c + 1)
+        game.board.grid[r][c] === game.board.grid[r + 1][c] &&
+        game.board.grid[r][c] === game.board.grid[r][c + 1] &&
+        game.board.grid[r][c] === game.board.grid[r + 1][c + 1]
       ) {
         // Remove the group
         game.board.grid[r][c] = "white";
@@ -216,6 +219,9 @@ export function removeGroups(game: Game) {
       }
     }
   }
+
+  // Increase the move counter
+  game.moves++;
 
   // Lock the board if the board is complete
   if (game.board.isComplete()) {

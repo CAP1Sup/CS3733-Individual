@@ -4,15 +4,22 @@
   --canvas-size: 400px;
   --canvas-center-y: 300px;
 
-  --d-pad-size: 100px;
-  --d-pad-center-y: 200px;
-  --d-pad-center-x: calc(50% + 300px);
+  --config-label-top: 135px;
+  --config-button-top: 173px;
+  --config-button-size: 109px;
+  --config-button-center-x: calc(50% - 300px);
+
+  --action-column-center-x: calc(50% + 300px);
+  --action-column-width: 125px;
+  --action-column-label-top: 135px;
+
+  --d-pad-size: calc(var(--action-column-width) - var(--d-pad-button-size));
+  --d-pad-center-y: 225px;
   --d-pad-button-size: 30px;
 
-  --config-button-top: 100px;
-  --config-button-width: 125px;
-  --config-button-height: 125px;
-  --config-button-center-x: calc(50% - 300px);
+  --action-button-top: 325px;
+  --action-button-spacing: 60px;
+  --action-button-size: 55px;
 }
 
 .fourByFourImg {
@@ -24,34 +31,33 @@
 .fiveByFiveButton,
 .sixBySixButton {
   position: absolute;
-  left: calc(var(--config-button-center-x) - var(--config-button-width) / 2);
-  width: var(--config-button-width);
-  height: var(--config-button-height);
+  left: calc(var(--config-button-center-x) - var(--config-button-size) / 2);
+  width: var(--config-button-size);
+  height: var(--config-button-size);
   cursor: pointer;
   border-radius: 10px;
   background-color: #ccc;
   border: 1px solid #aaa;
   box-shadow: 0 0 5px #aaa;
-  font-size: 60px;
+  font-size: 50px;
   font-weight: bold;
+  background-size: cover;
+  text-align: center;
 }
 
 .fourByFourButton {
   top: calc(var(--config-button-top));
   background-image: url(./assets/4x4.jpg);
-  background-size: cover;
 }
 
 .fiveByFiveButton {
-  top: calc(var(--config-button-top) + var(--config-button-height));
+  top: calc(var(--config-button-top) + var(--config-button-size));
   background-image: url(./assets/5x5.jpg);
-  background-size: cover;
 }
 
 .sixBySixButton {
-  top: calc(var(--config-button-top) + 2*var(--config-button-height));
+  top: calc(var(--config-button-top) + 2 * var(--config-button-size));
   background-image: url(./assets/6x6.jpg);
-  background-size: cover;
 }
 
 .App-canvas {
@@ -63,8 +69,8 @@
 .moveCounter,
 .scoreCounter {
   position: absolute;
-  width: 100px;
-  left: calc(50% - 50px);
+  width: 200px;
+  left: calc(50% - 100px);
   font-size: 20px;
 }
 
@@ -101,41 +107,61 @@
 
 .upButton {
   top: calc(var(--d-pad-center-y) - var(--d-pad-size) / 2);
-  left: var(--d-pad-center-x);
+  left: var(--action-column-center-x);
 }
 
 .downButton {
   top: calc(var(--d-pad-center-y) + var(--d-pad-size) / 2);
-  left: var(--d-pad-center-x);
+  left: var(--action-column-center-x);
 }
 
 .leftButton {
   top: var(--d-pad-center-y);
-  left: calc(var(--d-pad-center-x) - var(--d-pad-size) / 2);
+  left: calc(var(--action-column-center-x) - var(--d-pad-size) / 2);
 }
 
 .rightButton {
   top: var(--d-pad-center-y);
-  left: calc(var(--d-pad-center-x) + var(--d-pad-size) / 2);
+  left: calc(var(--action-column-center-x) + var(--d-pad-size) / 2);
 }
 
 .removeGroupsButton,
 .resetGameButton,
-.solveGameButton {
-  left: calc(var(--d-pad-center-x) - var(--d-pad-size) / 2);
+.solveGameButton,
+.actionColumnLabel {
+  left: calc(var(--action-column-center-x) - var(--d-pad-size) / 2);
   width: calc(var(--d-pad-size) + var(--d-pad-button-size));
-  height: 50px;
+  height: var(--action-button-size);
   border-radius: 10px;
+  font-weight: bold;
+  font-size: 20px;
 }
 
 .removeGroupsButton {
-  top: 300px;
+  top: var(--action-button-top);
 }
 
 .resetGameButton {
-  top: 375px;
+  top: calc(var(--action-button-top) + var(--action-button-spacing));
 }
 
 .solveGameButton {
-  top: 450px;
+  top: calc(var(--action-button-top) + 2 * var(--action-button-spacing));
+}
+
+.configColumnLabel,
+.actionColumnLabel {
+  position: absolute;
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.configColumnLabel {
+  top: calc(var(--config-label-top));
+  left: calc(var(--config-button-center-x) - 100px);
+  width: 200px;
+}
+
+.actionColumnLabel {
+  top: var(--action-column-label-top);
 }

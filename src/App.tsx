@@ -1,4 +1,4 @@
-import React, { KeyboardEvent } from "react";
+import React from "react";
 import "./App.css";
 
 import { redrawCanvas } from "./boundary/boundary.tsx";
@@ -30,23 +30,43 @@ function App() {
 
   /** Ensures initial rendering is performed, and that whenever model changes, it is re-rendered. */
   React.useEffect(() => {
-    /** Happens once. */
+    // Draw the canvas
     redrawCanvas(game, canvasRef.current);
-  }, [game, redraw]); // this second argument is CRITICAL, since it declares when to refresh (whenever Game changes)
 
-  // Key press handler
-  // TODO: Fix this
-  const keyDownHandler = (event: KeyboardEvent) => {
-    if (event.key === "ArrowUp") {
-      moveNinjaSeHandler(Direction.Up);
-    } else if (event.key === "ArrowDown") {
-      moveNinjaSeHandler(Direction.Down);
-    } else if (event.key === "ArrowLeft") {
-      moveNinjaSeHandler(Direction.Left);
-    } else if (event.key === "ArrowRight") {
-      moveNinjaSeHandler(Direction.Right);
-    }
-  };
+    // Key press handler
+    const keyDownHandler = (event: Event) => {
+      // Force event to be a keyboard event
+      // TODO: Fix this error
+      switch (event.key) {
+        case "ArrowUp":
+          event.preventDefault();
+          moveNinjaSeHandler(Direction.Up);
+          break;
+        case "ArrowDown":
+          event.preventDefault();
+          moveNinjaSeHandler(Direction.Down);
+          break;
+        case "ArrowLeft":
+          event.preventDefault();
+          moveNinjaSeHandler(Direction.Left);
+          break;
+        case "ArrowRight":
+          event.preventDefault();
+          moveNinjaSeHandler(Direction.Right);
+          break;
+        default:
+          break;
+      }
+    };
+
+    // Register the key press handler
+    document.addEventListener("keydown", keyDownHandler);
+
+    return () => {
+      // Unregister the key press handler
+      document.removeEventListener("keydown", keyDownHandler);
+    };
+  }, [game, redraw]); // this second argument is CRITICAL, since it declares when to refresh (whenever Game changes)
 
   function chooseConfigHandler(config: BoardConfig) {
     chooseConfig(game, config);
@@ -59,9 +79,7 @@ function App() {
   }
 
   function removeGroupsHandler() {
-    if (removeGroups(game)) {
-      // TODO: Display win message
-    }
+    removeGroups(game);
     forceRedraw(redraw + 1);
   }
 
@@ -77,13 +95,13 @@ function App() {
 
   onload = () => {
     chooseConfigHandler(config_5x5);
-    //addEventListener("keydown", keyDownHandler);
   };
 
   return (
     <div className="App" ref={appRef}>
       <link rel="stylesheet" href="./App.css"></link>
       <h1>SquarePush</h1>
+      <label className="configColumnLabel">Configurations</label>
       <button
         className="fourByFourButton"
         onClick={() => chooseConfigHandler(config_4x4)}
@@ -116,6 +134,7 @@ function App() {
       <p className="scoreCounter">
         <b>Score: </b> {game.score}
       </p>
+      <label className="actionColumnLabel">Actions</label>
       <button
         className="upButton"
         onClick={() => moveNinjaSeHandler(Direction.Up)}
