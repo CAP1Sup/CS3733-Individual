@@ -20,7 +20,7 @@ import {
 
 function App() {
   // initial instantiation of the Model
-  const [game, setGame] = React.useState(new Game()); // only place where Model object is instantiated.
+  const [game, setGame] = React.useState(new Game()); // only place where Game object is instantiated.
   const [redraw, forceRedraw] = React.useState(0); // change values to force redraw
 
   const appRef = React.useRef(null); // Later need to be able to refer to App

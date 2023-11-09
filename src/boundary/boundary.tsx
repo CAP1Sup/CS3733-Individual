@@ -23,25 +23,55 @@ export function redrawCanvas(game: Game, canvasObj: HTMLCanvasElement | null) {
   const lineWidth = 2;
 
   // Add lettering/numbering
+  drawLettering(ctx, game, labelBorderWidth, squareSize);
+
+  // Draw the grid
+  drawGrid(ctx, game, labelBorderWidth, squareSize, lineWidth);
+
+  // Color the squares
+  colorSquares(ctx, game, labelBorderWidth, squareSize, lineWidth);
+
+  // Draw Ninja-Se
+  drawNinjaSe(ctx, game, labelBorderWidth, squareSize);
+
+  // If the board is locked, draw a win message
+  if (game.board.locked) {
+    drawWinMessage(ctx, labelBorderWidth);
+  }
+}
+
+function drawLettering(
+  ctx: CanvasRenderingContext2D,
+  game: Game,
+  labelBorderWidth: number,
+  squareSize: number
+) {
   ctx.font = "20px Segoe UI";
   ctx.fillStyle = "black";
-  const letterXOffset = -6;
-  const letterYOffset = 6;
+  ctx.textAlign = "center";
+  ctx.textBaseline = "middle";
   for (let i = 0; i < game.board.size; i++) {
     ctx.fillText(
       String.fromCharCode("A".charCodeAt(0) + i),
-      labelBorderWidth + i * squareSize + squareSize / 2 + letterXOffset,
-      labelBorderWidth / 2 + letterYOffset
+      labelBorderWidth + i * squareSize + squareSize / 2,
+      labelBorderWidth / 2
     );
 
     ctx.fillText(
       String(i + 1),
-      labelBorderWidth / 2 + letterXOffset,
-      labelBorderWidth + i * squareSize + squareSize / 2 + letterYOffset
+      labelBorderWidth / 2,
+      labelBorderWidth + i * squareSize + squareSize / 2
     );
   }
+}
 
-  // Draw the grid
+function drawGrid(
+  ctx: CanvasRenderingContext2D,
+  game: Game,
+  labelBorderWidth: number,
+  squareSize: number,
+  lineWidth: number
+) {
   ctx.strokeStyle = "black";
   ctx.lineWidth = lineWidth;
   for (let i = 0; i <= game.board.size; i++) {
@@ -61,8 +91,15 @@ export function redrawCanvas(game: Game, canvasObj: HTMLCanvasElement | null) {
     );
     ctx.stroke();
   }
+}
 
-  // Color the squares
+function colorSquares(
+  ctx: CanvasRenderingContext2D,
+  game: Game,
+  labelBorderWidth: number,
+  squareSize: number,
+  lineWidth: number
+) {
   for (let r = 0; r < game.board.size; r++) {
     for (let c = 0; c < game.board.size; c++) {
       ctx.fillStyle = game.board.grid[r][c];
@@ -74,8 +111,14 @@ export function redrawCanvas(game: Game, canvasObj: HTMLCanvasElement | null) {
       );
     }
   }
+}
 
-  // Draw Ninja-Se
+function drawNinjaSe(
+  ctx: CanvasRenderingContext2D,
+  game: Game,
+  labelBorderWidth: number,
+  squareSize: number
+) {
   const image = document.getElementById("ninja-se");
   if (image !== null) {
     ctx.drawImage(
@@ -86,4 +129,41 @@ export function redrawCanvas(game: Game, canvasObj: HTMLCanvasElement | null) {
       game.ninjaSize * squareSize
     );
   }
+}
+
+function drawWinMessage(
+  ctx: CanvasRenderingContext2D,
+  labelBorderWidth: number
+) {
+  const winMessageHeight = 100;
+  const winMessageWidth = 300;
+  const borderWidth = 10;
+  ctx.fillStyle = "black";
+  ctx.fillRect(
+    labelBorderWidth +
+      (400 - labelBorderWidth - winMessageWidth) / 2 -
+      borderWidth,
+    labelBorderWidth +
+      (400 - labelBorderWidth - winMessageHeight) / 2 -
+      borderWidth,
+    winMessageWidth + 2 * borderWidth,
+    winMessageHeight + 2 * borderWidth
+  );
+  ctx.fillStyle = "yellow";
+  ctx.fillRect(
+    labelBorderWidth + (400 - labelBorderWidth - winMessageWidth) / 2,
+    labelBorderWidth + (400 - labelBorderWidth - winMessageHeight) / 2,
+    winMessageWidth,
+    winMessageHeight
+  );
+
+  ctx.font = "70px Segoe UI";
+  ctx.fillStyle = "black";
+  ctx.textAlign = "center";
+  ctx.textBaseline = "middle";
+  ctx.fillText(
+    "You win!",
+    labelBorderWidth + (400 - labelBorderWidth) / 2,
+    labelBorderWidth + (400 - labelBorderWidth) / 2
+  );
 }

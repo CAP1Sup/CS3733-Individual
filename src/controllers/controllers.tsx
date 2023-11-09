@@ -193,17 +193,17 @@ function wrapIndex(index: number, size: number) {
 export function removeGroups(game: Game) {
   // Make sure board isn't locked
   if (game.board.locked) {
-    return;
+    return false;
   }
 
   // Check for groups
   for (let r = 0; r < game.board.size; r++) {
     for (let c = 0; c < game.board.size; c++) {
       if (
-        isASquare(game, r, c) &&
-        isASquare(game, r + 1, c) &&
-        isASquare(game, r, c + 1) &&
-        isASquare(game, r + 1, c + 1)
+        game.board.isASquare(r, c) &&
+        game.board.isASquare(r + 1, c) &&
+        game.board.isASquare(r, c + 1) &&
+        game.board.isASquare(r + 1, c + 1)
       ) {
         // Remove the group
         game.board.grid[r][c] = "white";
@@ -217,22 +217,12 @@ export function removeGroups(game: Game) {
     }
   }
 
-  // TODO: Check if all squares are white (meaning the user won!)
+  // Lock the board if the board is complete
+  if (game.board.isComplete()) {
+    game.board.locked = true;
+    return true;
+  }
   return false;
-}
-
-function isASquare(game: Game, r: number, c: number) {
-  // Check the row is valid
-  if (r < 0 || r >= game.board.size) {
-    return false;
-  }
-
-  // Check the column is valid
-  if (c < 0 || c >= game.board.size) {
-    return false;
-  }
-
-  return game.board.grid[r][c] !== "white" && game.board.grid[r][c] !== "ninja";
 }
 
 export function resetGame(game: Game) {

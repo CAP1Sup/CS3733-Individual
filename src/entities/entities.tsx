@@ -35,6 +35,43 @@ export class Board {
       }
     }
   }
+
+  /**
+   * Checks if the board is completely white (i.e. no colored squares)
+   *
+   * @returns true if the board is completely white, false otherwise
+   */
+  public isComplete() {
+    for (let i = 0; i < this.size; i++) {
+      for (let j = 0; j < this.size; j++) {
+        if (this.grid[i][j] !== "white") {
+          return false;
+        }
+      }
+    }
+    return true;
+  }
+
+  /**
+   * Returns if the square at the given row and column is colored or not
+   * @param r Row of the square
+   * @param c Column of the square
+   * @returns If the square is colored or not
+   */
+  public isASquare(r: number, c: number) {
+    // Check the row is valid
+    if (r < 0 || r >= this.size) {
+      return false;
+    }
+
+    // Check the column is valid
+    if (c < 0 || c >= this.size) {
+      return false;
+    }
+
+    // Check the actual square
+    return this.grid[r][c] !== "white";
+  }
 }
 
 export enum Direction {
