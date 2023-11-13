@@ -168,7 +168,11 @@ function App() {
       <button className="resetGameButton" onClick={() => resetGameHandler()}>
         Reset Game
       </button>
-      <button className="solveGameButton" onClick={() => solveGameHandler()}>
+      <button
+        className="solveGameButton"
+        onClick={() => solveGameHandler()}
+        hidden
+      >
         Solve Game
       </button>
     </div>

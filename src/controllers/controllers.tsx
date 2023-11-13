@@ -196,6 +196,9 @@ export function removeGroups(game: Game) {
     return false;
   }
 
+  // Keep track of if any groups were removed
+  let groupsRemoved = false;
+
   // Check for groups
   for (let r = 0; r < game.board.size - 1; r++) {
     for (let c = 0; c < game.board.size - 1; c++) {
@@ -216,12 +219,17 @@ export function removeGroups(game: Game) {
 
         // Increment the score
         game.score += 4;
+
+        // Note that a group was removed
+        groupsRemoved = true;
       }
     }
   }
 
-  // Increase the move counter
-  game.moves++;
+  // Increase the move counter (if a group was removed)
+  if (groupsRemoved) {
+    game.moves++;
+  }
 
   // Lock the board if the board is complete
   if (game.board.isComplete()) {
